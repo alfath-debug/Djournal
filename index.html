@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Djournal - Database Publikasi Karya Ilmiah Dosen & Mahasiswa</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: {
+              main: '#0c0d11',
+              sidebar: '#111217',
+              card: '#17181f',
+              panel: '#13141a',
+              border: '#232530',
+              input: '#1a1b24',
+              hover: '#1e2029'
+            },
+            accent: {
+              blue: '#3b82f6',
+              blueHover: '#2563eb',
+              cyan: '#06b6d4',
+              purple: '#8b5cf6',
+              amber: '#f59e0b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom CSS for CourseConnect Theme -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-[#0c0d11] text-slate-100 min-h-screen selection:bg-blue-600 selection:text-white font-sans antialiased pb-20 lg:pb-0">
+
+  <!-- ========================================== -->
+  <!-- BAR ATAS: PENGALIH MODE HP / LAPTOP        -->
+  <!-- ========================================== -->
+  <div class="bg-[#111217] text-slate-400 text-xs py-2 px-4 border-b border-[#232530] hidden sm:block sticky top-0 z-50">
+    <div class="max-w-[1440px] mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <span class="inline-block w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+        <span class="font-bold text-slate-200">Djournal Core</span>
+        <span class="text-slate-600">|</span>
+        <span class="text-slate-400">Database Publikasi Karya Ilmiah & H5P Media (Mobile & Laptop Friendly)</span>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <span class="text-slate-400 mr-1">Tampilan:</span>
+        <button id="btn-view-laptop" onclick="app.toggleDeviceSimulator('laptop')" 
+          class="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-semibold transition hover:bg-blue-500 text-[11px] flex items-center gap-1">
+          <span>💻</span> Mode Laptop
+        </button>
+        <button id="btn-view-mobile" onclick="app.toggleDeviceSimulator('mobile')" 
+          class="px-2.5 py-1 rounded-lg bg-[#1a1b24] text-slate-400 font-semibold transition hover:text-white text-[11px] flex items-center gap-1">
+          <span>📱</span> Simulasi HP
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTAINER UTAMA (CANVAS DASHBOARD) -->
+  <div id="app-main-canvas" class="device-frame-wrapper max-w-[1440px] mx-auto min-h-screen flex flex-col">
+    
+    <!-- Phone Notch (Hanya muncul saat mode simulator HP aktif) -->
+    <div class="phone-notch"></div>
+
+    <!-- ========================================== -->
+    <!-- SECTION 1: HALAMAN LOGIN / MASUK           -->
+    <!-- ========================================== -->
+    <div id="login-view-wrapper" class="flex-1 flex items-center justify-center p-4 sm:p-8 animate-fade-in">
+      <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+        
+        <!-- Sisi Kiri: Branding & Info Peran -->
+        <div class="md:col-span-5 space-y-5 text-center md:text-left">
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#1b1d28] border border-blue-500/30 text-blue-400 text-xs font-semibold">
+            <span>✨</span>
+            <span>Platform Publikasi Terbuka</span>
+          </div>
+
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+            Selamat Datang di <span class="text-blue-500">Djournal</span>
+          </h1>
+
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            Database repositori karya ilmiah, jurnal nasional (SINTA), jurnal internasional (Scopus/WoS), dan media pembelajaran interaktif H5P.
+          </p>
+
+          <div class="p-4 rounded-2xl bg-[#17181f] border border-[#232530] text-left space-y-2 text-xs">
+            <h4 class="font-bold text-slate-200 uppercase tracking-wider text-[11px]">Hak Akses Pengguna:</h4>
+            <div class="text-slate-400">
+              <span class="text-blue-400 font-semibold">👨‍🏫 Dosen / Mahasiswa:</span> Login dengan Nama & NIP/NIM, upload karya, sertakan H5P, kelola profil, dan review karya.
+            </div>
+            <div class="text-slate-400">
+              <span class="text-purple-400 font-semibold">👥 Pengguna Umum:</span> Akses penuh membaca, memutar H5P, <strong>memberikan review & rating</strong> pada setiap karya.
+            </div>
+          </div>
+        </div>
+
+        <!-- Sisi Kanan: Form Login & 1-Click Demo -->
+        <div class="md:col-span-7">
+          <div class="p-6 sm:p-8 rounded-[28px] bg-[#14151b] border border-[#262837] shadow-2xl space-y-6">
+            
+            <div>
+              <h3 class="text-xl font-bold text-white">Masuk ke Djournal</h3>
+              <p class="text-xs text-slate-400 mt-1">Gunakan akun demo instan atau masukkan identitas Anda</p>
+            </div>
+
+            <!-- Demo 1-Click Buttons -->
+            <div class="p-4 rounded-2xl bg-[#1a1c26] border border-white/5 space-y-2">
+              <p class="text-[11px] font-bold text-blue-400 flex items-center gap-1">
+                <span>⚡</span> Akses Uji Coba Cepat (Pilih 1-Klik):
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <button type="button" onclick="app.loginWithDemo('dosen')" 
+                  class="p-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition text-center shadow-lg shadow-blue-600/20">
+                  👨‍🏫 Demo Dosen
+                  <span class="block text-[10px] font-normal text-blue-200">Dr. Siti Nurhaliza</span>
+                </button>
+                <button type="button" onclick="app.loginWithDemo('mahasiswa')" 
+                  class="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition text-center shadow-lg shadow-emerald-600/20">
+                  👨‍🎓 Demo Mahasiswa
+                  <span class="block text-[10px] font-normal text-emerald-200">Ahmad Fauzan</span>
+                </button>
+                <button type="button" onclick="app.loginWithDemo('umum')" 
+                  class="p-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition text-center shadow-lg shadow-purple-600/20">
+                  👥 Demo Umum
+                  <span class="block text-[10px] font-normal text-purple-200">Budi (Reviewer)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Form Manual -->
+            <form id="form-login-user" class="space-y-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1.5">Peran Pengguna</label>
+                <select id="login-role" class="w-full text-xs p-3 rounded-xl border border-[#2d303e] bg-[#1a1b24] text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="dosen">👨‍🏫 Dosen / Peneliti</option>
+                  <option value="mahasiswa">👨‍🎓 Mahasiswa</option>
+                  <option value="umum">👥 Pengguna Umum / Reviewer</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1.5">Nama Lengkap & Gelar *</label>
+                <input type="text" id="login-name" required placeholder="Contoh: Dr. Siti Nurhaliza, M.Pd" 
+                  class="w-full text-xs p-3 rounded-xl border border-[#2d303e] bg-[#1a1b24] text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1.5">NIP / NIDN / NIM</label>
+                <input type="text" id="login-nimnip" placeholder="Contoh: 198405122008122003 atau 210103045" 
+                  class="w-full text-xs p-3 rounded-xl border border-[#2d303e] bg-[#1a1b24] text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <span class="text-[10px] text-slate-500 mt-1 block">Kosongkan bila masuk sebagai Pengguna Umum.</span>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1.5">Universitas / Asal Instansi</label>
+                <input type="text" id="login-univ" placeholder="Contoh: Universitas Pendidikan Indonesia" 
+                  class="w-full text-xs p-3 rounded-xl border border-[#2d303e] bg-[#1a1b24] text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+
+              <button type="submit" 
+                class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition shadow-lg shadow-blue-500/25">
+                Masuk ke Dashboard
+              </button>
+            </form>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- SECTION 2: 3-COLUMN DASHBOARD (PERSIS COURSECONNECT LAYOUT)-->
+    <!-- ========================================================= -->
+    <div id="dashboard-view-wrapper" class="flex-1 flex flex-col lg:flex-row gap-6 p-4 sm:p-6 hidden animate-fade-in">
+      
+      <!-- ======================================== -->
+      <!-- KOLOM 1: SIDEBAR NAVIGASI KIRI           -->
+      <!-- ======================================== -->
+      <aside class="w-full lg:w-[230px] shrink-0 dark-sidebar rounded-[28px] p-5 flex flex-col justify-between hidden lg:flex border border-[#232530]">
+        
+        <div class="space-y-6">
+          <!-- Logo Brand (Sesuai Logo CourseConnect) -->
+          <div class="flex items-center space-x-3 cursor-pointer" onclick="app.setCategoryFilter('ALL')">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-700 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
+              <!-- Curved loop SVG icon -->
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+              </svg>
+            </div>
+            <div>
+              <span class="font-extrabold text-sm tracking-wider text-white uppercase block">DJOURNAL</span>
+              <span class="text-[9px] text-slate-500 uppercase tracking-widest block font-mono">Academic Hub</span>
+            </div>
+          </div>
+
+          <!-- Navigation Menu (CourseConnect Items) -->
+          <nav class="space-y-1.5 pt-2">
+            <!-- Dashboard -->
+            <button onclick="app.setCategoryFilter('ALL')" 
+              class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-[#1a1b24] transition">
+              <span class="text-sm">⊞</span>
+              <span>Dashboard</span>
+            </button>
+
+            <!-- Homework / Karya Saya -->
+            <button onclick="app.openProfileView()" 
+              class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-[#1a1b24] transition">
+              <span class="text-sm">📄</span>
+              <span>Publikasi Saya</span>
+            </button>
+
+            <!-- Schedule / Agenda -->
+            <button onclick="app.showToast('Jadwal review dan sidang riset semester ini aktif.', 'info')" 
+              class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-[#1a1b24] transition">
+              <span class="text-sm">📅</span>
+              <span>Schedule</span>
+            </button>
+
+            <!-- Courses / Kategori Publikasi (Active Item dengan Blue Bar kiri seperti screenshot!) -->
+            <button onclick="app.setCategoryFilter('ALL')" 
+              class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-bold text-blue-400 bg-[#171924] border-l-4 border-blue-500 shadow-sm transition">
+              <span class="text-sm">📁</span>
+              <span>Courses</span>
+            </button>
+
+            <!-- Chat / Ulasan Komunitas -->
+            <button onclick="app.showToast('Buka salah satu karya untuk melihat ruang diskusi & ulasan!', 'info')" 
+              class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-[#1a1b24] transition">
+              <span class="text-sm">💬</span>
+              <span>Chat / Ulasan</span>
+            </button>
+
+            <!-- Bookmarks -->
+            <button onclick="app.showToast('Fitur penanda publikasi favorit tersimpan.', 'info')" 
+              class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-[#1a1b24] transition">
+              <span class="text-sm">⭐</span>
+              <span>Bookmarks</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- Bottom Side: Promo Card & Log Out -->
+        <div class="space-y-4 pt-4 border-t border-[#232530]">
+          
+          <!-- Download Our App Card (Persis Card Melengkung di Screenshot) -->
+          <div class="relative bg-gradient-to-b from-[#1b1c26] to-[#12131a] border border-white/5 rounded-2xl p-4 text-center overflow-hidden">
+            <button onclick="this.parentElement.style.display='none'" class="absolute top-2 right-2 text-slate-500 hover:text-white text-xs">
+              ✕
+            </button>
+            <p class="text-xs font-bold text-white leading-tight">
+              Download<br>our <span class="bg-blue-600 px-1.5 py-0.2 rounded text-[10px]">app</span>
+            </p>
+            
+            <!-- Phone Graphic Mockup -->
+            <div class="mt-3 mx-auto w-16 h-14 bg-[#232536] rounded-t-xl border-t border-x border-white/10 pt-1 px-1 flex flex-col items-center">
+              <div class="w-6 h-1 bg-black rounded-full mb-1"></div>
+              <div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white text-[10px]">
+                Dj
+              </div>
+            </div>
+          </div>
+
+          <!-- Log Out Button -->
+          <button onclick="app.logout()" 
+            class="w-full flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+            <span>Log Out</span>
+          </button>
+        </div>
+
+      </aside>
+
+      <!-- ======================================== -->
+      <!-- KOLOM 2: KONTEN UTAMA (MIDDLE FEED)      -->
+      <!-- ======================================== -->
+      <main class="flex-1 flex flex-col space-y-5 min-w-0">
+        
+        <!-- Topbar: Courses Title, Search, Notification & Profile -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          
+          <div class="flex items-center space-x-3">
+            <!-- Mobile Brand Toggle (Hanya di layar kecil) -->
+            <div class="lg:hidden w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-xs">
+              Dj
+            </div>
+            <!-- Title "Courses" persis screenshot -->
+            <h2 class="text-2xl font-bold text-white tracking-tight">Courses</h2>
+          </div>
+
+          <!-- Search Input & Filter Button & User Status -->
+          <div class="flex items-center space-x-3">
+            
+            <!-- Search Pill (Persis Desain Screenshot) -->
+            <div class="relative w-48 sm:w-64">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-xs">
+                🔍
+              </span>
+              <input type="text" id="topbar-search-input" 
+                placeholder="Search" 
+                class="w-full pl-8 pr-3 py-2 text-xs rounded-xl border border-[#272936] bg-[#17181f] text-white focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-slate-500">
+            </div>
+
+            <!-- Settings / Filter Button [ ⚙️ ] -->
+            <button onclick="app.showToast('Gunakan tab kategori di bawah untuk memfilter bidang kajian.', 'info')" 
+              class="w-9 h-9 rounded-xl bg-[#17181f] border border-[#272936] text-slate-400 hover:text-white flex items-center justify-center transition" title="Filter Lanjutan">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+              </svg>
+            </button>
+
+            <!-- Notification Bell Icon (Persis Screenshot) -->
+            <button onclick="app.showToast('Tidak ada notifikasi review baru hari ini.', 'info')" 
+              class="relative w-9 h-9 rounded-xl bg-[#17181f] border border-[#272936] text-slate-400 hover:text-white flex items-center justify-center transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+              </svg>
+              <span class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+            </button>
+
+            <!-- User Profile Avatar & Name (Persis CourseConnect: Joseph Mitchell) -->
+            <div class="flex items-center space-x-2 cursor-pointer pl-1" onclick="app.openProfileView()">
+              <div class="text-right hidden sm:block">
+                <span id="topbar-user-name" class="text-xs font-bold text-white block leading-tight">Joseph Mitchell</span>
+                <span id="topbar-user-role" class="text-[10px] text-slate-400 block">Dosen / Peneliti</span>
+              </div>
+              <img id="topbar-user-avatar" 
+                   src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80" 
+                   alt="User" class="w-9 h-9 rounded-full object-cover border border-white/10">
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Banner Hak Akses (Membedakan Dosen/Mhs vs Umum) -->
+        <div id="role-privilege-banner" class="hidden">
+          <!-- Rendered by app.js -->
+        </div>
+
+        <!-- Horizontal Category Tabs (Persis CourseConnect: All, Advertising, Design, ...) -->
+        <div class="border-b border-[#232530] pb-2">
+          <div id="category-tabs-container" class="flex items-center space-x-6 overflow-x-auto scrollbar-none">
+            <!-- Rendered by app.js -->
+          </div>
+        </div>
+
+        <!-- LIST PUBLIKASI CARDS (HORIZONTAL CARD LAYOUT PERSIS SCREENSHOT) -->
+        <div id="publication-cards-list" class="space-y-4">
+          <!-- Rendered by app.js -->
+        </div>
+
+      </main>
+
+      <!-- ======================================== -->
+      <!-- KOLOM 3: PANEL WIDGET KANAN              -->
+      <!-- ======================================== -->
+      <aside class="w-full lg:w-[300px] shrink-0 space-y-6">
+        
+        <!-- WIDGET 1: KALENDER (PERSIS SCREENSHOT: JULY 2023) -->
+        <div class="dark-panel rounded-[24px] p-5 border border-[#232530]">
+          <!-- Header Kalender dengan Navigasi Bulan -->
+          <div class="flex items-center justify-between mb-4">
+            <h4 class="text-sm font-bold text-white">July 2026</h4>
+            <div class="flex items-center space-x-1 text-slate-400">
+              <button onclick="app.showToast('Navigasi bulan kalender.', 'info')" class="w-6 h-6 rounded-lg hover:bg-white/5 flex items-center justify-center text-xs">
+                ‹
+              </button>
+              <button onclick="app.showToast('Navigasi bulan kalender.', 'info')" class="w-6 h-6 rounded-lg hover:bg-white/5 flex items-center justify-center text-xs">
+                ›
+              </button>
+            </div>
+          </div>
+
+          <!-- Hari dalam Seminggu: SUN MON TUE WED THU FRI SAT -->
+          <div class="grid grid-cols-7 text-center text-[10px] font-bold text-slate-500 mb-2">
+            <span>SUN</span>
+            <span>MON</span>
+            <span class="text-blue-400 font-extrabold">TUE</span>
+            <span>WED</span>
+            <span>THU</span>
+            <span>FRI</span>
+            <span>SAT</span>
+          </div>
+
+          <!-- Tanggal: 12 13 14 15 16 17 18 (14 dilingkari biru) -->
+          <div class="grid grid-cols-7 text-center text-xs font-semibold text-slate-300">
+            <span class="py-1">12</span>
+            <span class="py-1">13</span>
+            <span class="py-1 rounded-full bg-blue-600 text-white font-bold shadow-md shadow-blue-500/30">14</span>
+            <span class="py-1">15</span>
+            <span class="py-1">16</span>
+            <span class="py-1">17</span>
+            <span class="py-1">18</span>
+          </div>
+        </div>
+
+        <!-- WIDGET 2: MENTORS / DOSEN & PENELITI TERAKTIF (PERSIS SCREENSHOT) -->
+        <div class="dark-panel rounded-[24px] p-5 border border-[#232530] space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm font-bold text-white">Mentors</h4>
+            <button onclick="app.setCategoryFilter('ALL')" class="text-xs text-slate-400 hover:text-white flex items-center gap-0.5">
+              <span>See all</span>
+              <span>›</span>
+            </button>
+          </div>
+
+          <div id="mentors-widget-container" class="divide-y divide-white/5">
+            <!-- Rendered by app.js -->
+          </div>
+        </div>
+
+        <!-- WIDGET 3: LEARNING PROCESS / STATUS RISET (PERSIS SCREENSHOT) -->
+        <div class="dark-panel rounded-[24px] p-5 border border-[#232530] space-y-4">
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm font-bold text-white">Learning Process</h4>
+            <button onclick="app.setCategoryFilter('ALL')" class="text-xs text-slate-400 hover:text-white flex items-center gap-0.5">
+              <span>See all</span>
+              <span>›</span>
+            </button>
+          </div>
+
+          <div id="learning-process-widget-container" class="space-y-3">
+            <!-- Rendered by app.js -->
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MOBILE BOTTOM NAVIGATION BAR               -->
+    <!-- ========================================== -->
+    <nav class="fixed bottom-0 inset-x-0 bg-[#111217]/95 backdrop-blur-md border-t border-[#232530] py-2.5 px-4 z-40 flex items-center justify-around lg:hidden">
+      <button onclick="app.setCategoryFilter('ALL')" class="flex flex-col items-center text-xs font-semibold text-slate-400 hover:text-blue-500">
+        <span class="text-base">⊞</span>
+        <span class="text-[10px]">Dashboard</span>
+      </button>
+
+      <button id="sidebar-btn-upload" onclick="app.openUploadModal()" class="flex flex-col items-center text-xs font-bold text-white bg-blue-600 rounded-full w-10 h-10 -mt-5 shadow-lg shadow-blue-500/40 flex items-center justify-center">
+        <span class="text-lg">+</span>
+      </button>
+
+      <button onclick="app.openProfileView()" class="flex flex-col items-center text-xs font-semibold text-slate-400 hover:text-blue-500">
+        <span class="text-base">👤</span>
+        <span class="text-[10px]">Profil</span>
+      </button>
+
+      <button onclick="app.logout()" class="flex flex-col items-center text-xs font-semibold text-slate-400 hover:text-red-400">
+        <span class="text-base">🚪</span>
+        <span class="text-[10px]">Keluar</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 1: DETAIL KARYA & REVIEW SYSTEM      -->
+  <!-- ========================================== -->
+  <div id="detail-modal" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto hidden">
+    <div class="relative w-full max-w-4xl max-h-[92vh] bg-[#14151c] rounded-[28px] shadow-2xl border border-[#2d303e] flex flex-col overflow-hidden animate-fade-in my-auto">
+      
+      <!-- Close Button -->
+      <button onclick="app.closeDetailModal()" class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-[#20212b] hover:bg-[#2b2d3a] text-slate-300 font-bold flex items-center justify-center transition">
+        ✕
+      </button>
+
+      <div id="detail-modal-body" class="overflow-y-auto flex-1">
+        <!-- Rendered by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 2: UPLOAD KARYA ILMIAH BARU          -->
+  <!-- ========================================== -->
+  <div id="upload-modal" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto hidden">
+    <div class="relative w-full max-w-3xl max-h-[92vh] bg-[#14151c] rounded-[28px] shadow-2xl border border-[#2d303e] flex flex-col overflow-hidden animate-fade-in my-auto">
+      
+      <div class="p-6 border-b border-[#232530] bg-[#111217] flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-bold text-white">Publikasikan Karya Ilmiah Baru</h3>
+          <p class="text-xs text-slate-400">Khusus Dosen & Mahasiswa: Lengkapi 3 Pilar Deskripsi Karya (Problem, Isi, Solusi)</p>
+        </div>
+        <button onclick="app.closeUploadModal()" class="w-8 h-8 rounded-full bg-[#20212b] hover:bg-[#2b2d3a] text-slate-300 font-bold flex items-center justify-center transition">
+          ✕
+        </button>
+      </div>
+
+      <form id="form-upload-karya" class="overflow-y-auto p-6 space-y-4 flex-1">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Judul Karya Ilmiah / Artikel *</label>
+          <input type="text" id="upload-title" required placeholder="Contoh: Inovasi Gamifikasi Interaktif Berbasis H5P..."
+            class="w-full text-xs p-3 rounded-xl border border-[#2d303e] bg-[#1a1b24] text-white focus:ring-2 focus:ring-blue-500 font-semibold">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Kategori Utama *</label>
+            <select id="upload-category" required class="w-full text-xs p-3 rounded-xl border border-[#2d303e] bg-[#1a1b24] text-white focus:ring-2 focus:ring-blue-500">
+              <option value="PUB-01">PUB-01: Media Pembelajaran</option>
+              <option value="PUB-02">PUB-02: Desain Pembelajaran</option>
+              <option value="PUB-03">PUB-03: Teknologi Digital & AI</option>
+              <option value="PUB-04">PUB-04: Evaluasi Pembelajaran</option>
+              <option value="PUB-05">PUB-05: Teori Tekpend</option>
+              <option value="PUB-06">PUB-06: Inovasi Pembelajaran (H5P/AR)</option>
+              <option value="PUB-07">PUB-07: Pendidikan Inklusif</option>
+              <option value="PUB-08">PUB-08: Profesi Pendidik</option>
+              <option value="PUB-09">PUB-09: Kebijakan Pendidikan</option>
+              <option value="PUB-10">PUB-10: Kajian Literatur (SLR)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Tingkat & Indeksasi Jurnal *</label>
+            <select id="upload-index-level" required class="w-full text-xs p-3 rounded-xl border border-[#2d303e] bg-[#1a1b24] text-white focus:ring-2 focus:ring-blue-500">
+              <option value="scopus">Scopus / Web of Science</option>
+              <option value="sinta-1">SINTA 1</option>
+              <option value="sinta-2">SINTA 2</option>
+              <option value="sinta-3">SINTA 3</option>
+              <option value="sinta-4">SINTA 4</option>
+              <option value="sinta-5">SINTA 5</option>
+              <option value="sinta-6">SINTA 6</option>
+              <option value="internasional">Jurnal Internasional</option>
+              <option value="nasional">Jurnal Nasional</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Nama Jurnal / Penerbit</label>
+            <input type="text" id="upload-journal-name" placeholder="Contoh: Jurnal Inovasi Pendidikan"
+              class="w-full text-xs p-3 rounded-xl border border-[#2d303e] bg-[#1a1b24] text-white focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Link DOI / Tautan Jurnal</label>
+            <input type="url" id="upload-doi" placeholder="https://doi.org/10.xxxx/..."
+              class="w-full text-xs p-3 rounded-xl border border-[#2d303e] bg-[#1a1b24] text-white focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+
+        <!-- 3 Pilar Deskripsi -->
+        <div class="space-y-3 pt-2 border-t border-[#232530]">
+          <div class="dark-pilar-problem p-3 rounded-xl">
+            <label class="block text-xs font-bold text-red-400 mb-1">⚠️ 1. Problem dari Karyanya *</label>
+            <textarea id="upload-problem" required rows="2" placeholder="Jelaskan permasalahan latar belakang..."
+              class="w-full text-xs p-2.5 rounded-lg border border-[#2d303e] bg-[#0c0d11] text-white"></textarea>
+          </div>
+
+          <div class="dark-pilar-isi p-3 rounded-xl">
+            <label class="block text-xs font-bold text-emerald-400 mb-1">📄 2. Isi Singkat Karya & Metode *</label>
+            <textarea id="upload-isi" required rows="2" placeholder="Ringkaskan isi dan pendekatan penelitian..."
+              class="w-full text-xs p-2.5 rounded-lg border border-[#2d303e] bg-[#0c0d11] text-white"></textarea>
+          </div>
+
+          <div class="dark-pilar-solusi p-3 rounded-xl">
+            <label class="block text-xs font-bold text-blue-400 mb-1">💡 3. Solusi yang Ditawarkan *</label>
+            <textarea id="upload-solusi" required rows="2" placeholder="Jelaskan kontribusi nyata dan solusi dari karya ini..."
+              class="w-full text-xs p-2.5 rounded-lg border border-[#2d303e] bg-[#0c0d11] text-white"></textarea>
+          </div>
+        </div>
+
+        <!-- H5P Link & Berkas -->
+        <div class="space-y-3 pt-2 border-t border-[#232530]">
+          <div>
+            <label class="block text-xs font-bold text-amber-400 mb-1">⚡ Link H5P / Video Interaktif (Opsional)</label>
+            <input type="url" id="upload-h5p-link" placeholder="Contoh: https://h5p.org/h5p/embed/617"
+              class="w-full text-xs p-3 rounded-xl border border-[#2d303e] bg-[#1a1b24] text-white focus:ring-2 focus:ring-amber-500">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">Upload Naskah (PDF/DOCX)</label>
+              <input type="file" id="upload-file-doc" accept=".pdf,.doc,.docx" 
+                class="w-full text-xs text-slate-400 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#20212b] file:text-slate-200">
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">Upload Foto Sampul / Thumbnail</label>
+              <input type="file" id="upload-thumbnail-file" accept="image/*" 
+                class="w-full text-xs text-slate-400 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#20212b] file:text-slate-200">
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-[#232530] flex items-center justify-end space-x-3">
+          <button type="button" onclick="app.closeUploadModal()" 
+            class="px-4 py-2.5 rounded-xl border border-[#2d303e] text-xs font-bold text-slate-300 hover:bg-[#20212b] transition">
+            Batal
+          </button>
+          <button type="submit" 
+            class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition shadow-lg shadow-blue-500/25">
+            Publikasikan Karya 🚀
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 3: PROFIL PUBLISHER                  -->
+  <!-- ========================================== -->
+  <div id="profile-modal" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto hidden">
+    <div class="relative w-full max-w-2xl max-h-[90vh] bg-[#14151c] rounded-[28px] shadow-2xl border border-[#2d303e] p-6 flex flex-col overflow-hidden animate-fade-in my-auto">
+      <button onclick="app.closeProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white font-bold text-sm">
+        ✕
+      </button>
+      <div id="profile-modal-body" class="overflow-y-auto">
+        <!-- Rendered by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 4: PRATINJAU DOKUMEN PDF             -->
+  <!-- ========================================== -->
+  <div id="pdf-viewer-modal" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md overflow-y-auto hidden">
+    <div class="relative w-full max-w-3xl max-h-[92vh] bg-[#0c0d11] rounded-[28px] shadow-2xl border border-[#2d303e] flex flex-col overflow-hidden animate-fade-in my-auto">
+      <div class="p-4 bg-[#14151c] text-white flex items-center justify-between border-b border-[#232530]">
+        <span id="pdf-viewer-title" class="text-xs font-bold truncate">Naskah Publikasi</span>
+        <button onclick="app.closePdfViewer()" class="px-3 py-1 rounded-lg bg-[#20212b] hover:bg-[#2b2d3a] text-xs text-white">
+          Tutup
+        </button>
+      </div>
+      <div id="pdf-viewer-content" class="overflow-y-auto p-4 sm:p-6 flex-1">
+        <!-- Rendered by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- TOAST NOTIFICATION                         -->
+  <!-- ========================================== -->
+  <div id="toast-notification" 
+       class="fixed bottom-6 right-6 z-50 transform translate-y-4 opacity-0 pointer-events-none transition-all duration-300 flex items-center space-x-3 px-4 py-3 rounded-2xl bg-[#1b1d28] text-white text-xs shadow-2xl border border-[#2d303e]">
+    <span id="toast-icon" class="text-base">🔔</span>
+    <span id="toast-message" class="font-medium">Notifikasi</span>
+  </div>
+
+  <!-- Main JavaScript File -->
+  <script src="app.js"></script>
+</body>
+</html>
